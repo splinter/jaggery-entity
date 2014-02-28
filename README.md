@@ -4,7 +4,7 @@ jaggery-entity
 Defining an Entity
 ==================
 
-### A basic definition
+### Defining an Entity Schema
 
 ```javascript
 
@@ -19,8 +19,6 @@ Defining an Entity
     });
   
 ```
-
-### A complex definition
 
 
 ### Child Entities
