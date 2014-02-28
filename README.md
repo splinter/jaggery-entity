@@ -20,7 +20,6 @@ Defining an Entity
   
 ```
 
-
 ### Child Entities
 An Entity can be derived from a parent Entity definition.
 
@@ -78,13 +77,11 @@ A static method will not be called in the context of the Entity that has invoked
 Working with an Entity
 ======================
 
+
 ```javascript
   var User=ef.entity('User');
   var firstUser=new User();
 ```
-
-Using an Entity
-===============
 
 ###Setting the value of a property
 
@@ -141,9 +138,47 @@ The method will return an array with all the properties that do not match.
 [ 'name']
 
 
-
 Locating an Entity
 ==================
+
+###Locating  a single entity
+
+A simple query would look like the following;
+
+```javascript
+  var User=new ef.Entity('User');
+  User.find({name:'Sam'});  
+```
+
+Thats all fine and dandy but what if we have complex queries?
+
+
+###Locating a collection of entities
+
+Getting all of the users;
+
+```javascript
+
+  var users=User.findAll(); //Not usually a good idea
+  
+```
+This will return an array containing all of the Users in the datasource. Each entry will be a full blown entity so you could do things like this;
+
+```javascript
+
+  for(var index in users){
+    print(users[index].name); //This will print the name of all the users
+  }
+```
+
+
+
+
+```javascript
+  
+  User.findAll({ name:'Sam
+  
+```
 
 
 Entity Life-cycle
