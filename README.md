@@ -36,6 +36,36 @@ An Entity can be derived from a parent Entity definition.
   });
   
 ```
+
+### Virtual properties
+It is possible for an Entity Schema to define properties that are not persisted to a database using the virtual function
+
+```javascript
+  User.virtual('nickname').get(function(){
+      return this.name;
+  });
+  
+```
+
+### Entity Methods
+An entity method will be called in the context of the current asset
+
+```javascript
+  User.methods.getCurrentLocation=function(){
+    return '0.0';
+  };
+```
+
+
+### Static Methods
+A static method will not be called in the context of the Entity that has invoked the method
+
+```javascript
+  User.static.getTypesOfUsers=function(){
+     return ['Normal','Happy'];
+  };
+```
+
   
 ### Adding a plug-in to a schema
 
@@ -45,8 +75,8 @@ An Entity can be derived from a parent Entity definition.
 ```
 
 
-Creating an instance of an Entity
-=================================
+Working with an Entity
+======================
 
 ```javascript
   var User=ef.entity('User');
@@ -86,8 +116,12 @@ Locating an Entity
 ==================
 
 
+
+
 Entity Life-cycle
 =================
+
+init ->  created -> changed -> deleted 
 
 
 Plug-ins
