@@ -4,17 +4,50 @@ jaggery-entity
 Defining an Entity
 ==================
 
+### A basic definition
+
 ```javascript
-  var User=new ef.EntitySchema();
+
+  var User=new ef.EntitySchema({
   
-  //Define the properties of the entity
-  User.props={
-     id:Number,
-     name:String,
-     location:String
-  };
+    props:{
+      id:Number,
+      name:String,
+      description:String
+    }
+  });
   
 ```
+
+### A complex definition
+
+
+### Child Entities
+An Entity can be derived from a parent Entity definition.
+
+```javascript
+  var HappyUser=new ef.EntitySchema('User',{
+  
+    props:{
+      hasCake:Boolean,
+      cakeType:String
+    }
+    
+  });
+  
+  
+
+```
+
+### Adding a plug-in to a schema
+
+```javascript
+  var logger=require('entity').log; //Logs all entity life-cycle actions
+  HappyUser.plug(logger);
+```
+
+### 
+
 
 Creating an instance of an Entity
 =================================
