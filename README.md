@@ -171,14 +171,20 @@ This will return an array containing all of the Users in the datasource. Each en
   }
 ```
 
-
-
+Although the above code is fine when dealing with a small number of records, it becomes unmanagable when dealing large numbers. So it is a good idea to pass in a pagination context like below;
 
 ```javascript
   
-  User.findAll({ name:'Sam
+  var result=User.findAll({ start:0 , end:10 });
   
 ```
+
+The query method allows more fine grained controll over retrieval of data.
+
+```javascript
+  var result=User.query('SELECT * FROM Users WHERE name LIKE "sam"');
+```
+
 
 
 Entity Life-cycle
