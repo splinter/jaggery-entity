@@ -9,13 +9,13 @@ Defining an Entity
 ```javascript
 
   var User=new ef.EntitySchema({
-  
-    props:{
+    
       id:Number,
       name:String,
-      description:String
-    }
-  });
+      description:String,
+      location:{ type:String,mandatory:true, default:'Earth'}
+      
+    });
   
 ```
 
@@ -26,6 +26,7 @@ Defining an Entity
 An Entity can be derived from a parent Entity definition.
 
 ```javascript
+
   var HappyUser=new ef.EntitySchema('User',{
   
     props:{
@@ -35,9 +36,11 @@ An Entity can be derived from a parent Entity definition.
     
   });
   
-  
-
 ```
+
+### Adding validations
+  User.validations(
+  
 
 ### Adding a plug-in to a schema
 
@@ -46,7 +49,6 @@ An Entity can be derived from a parent Entity definition.
   HappyUser.plug(logger);
 ```
 
-### 
 
 
 Creating an instance of an Entity
