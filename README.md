@@ -36,18 +36,13 @@ An Entity can be derived from a parent Entity definition.
   });
   
 ```
-
-### Adding validations
-  User.validations(
   
-
 ### Adding a plug-in to a schema
 
 ```javascript
   var logger=require('entity').log; //Logs all entity life-cycle actions
   HappyUser.plug(logger);
 ```
-
 
 
 Creating an instance of an Entity
@@ -90,7 +85,15 @@ Using an Entity
 Locating an Entity
 ==================
 
-##
+
+Entity Life-cycle
+=================
+
+
+Plug-ins
+========
+
+
 
 
 
