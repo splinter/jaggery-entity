@@ -14,6 +14,7 @@ Defining an Entity
       name:String,
       description:String,
       location:{ type:String,mandatory:true, default:'Earth'}
+      registrationDate:Date
       
     });
   
