@@ -104,6 +104,9 @@ Using an Entity
 ```javascript
   firstUser.name='Not Sam';
   firstUser.save();
+  
+  //If you want validations to be skipped
+  firstUser.save('validate',false);
 ```
 
 ###Removing an entity
@@ -112,10 +115,35 @@ Using an Entity
   firstUser.remove();
 ```
 
+### Validations
+All though validations for a given entity are performed automatically before  
+
+```javascript
+  firstUser.validate();
+```
+
+### Diff
+The diff method returns the difference between two entities of the same type.If the two entities are not of the same type then an error will be thrown.
+
+```javascript
+  var secondUser=new ef.Entity({
+    name:'Ann'
+  });
+  
+  var difference=firstUser.diff(secondUser);
+  
+  log.info(stringify(difference));  //Stringify simply serializes the output
+  
+```
+
+The method will return an array with all the properties that do not match.
+
+[ 'name']
+
+
+
 Locating an Entity
 ==================
-
-
 
 
 Entity Life-cycle
