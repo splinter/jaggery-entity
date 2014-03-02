@@ -112,12 +112,16 @@ Working with an Entity
   firstUser.remove();
 ```
 
-### Validations
-All though validations for a given entity are performed automatically before  
+### Adding validations
+Validations can be attached on a per field basis or to an entity as a whole using a plug-in.To target a specific field;
 
 ```javascript
-  firstUser.validate();
+User.field('name').validate(function(nameValue,nameFieldSchema){
+  return false;
+},'Check for offensive names');
+
 ```
+
 
 ### Diff
 The diff method returns the difference between two entities of the same type.If the two entities are not of the same type then an error will be thrown.
