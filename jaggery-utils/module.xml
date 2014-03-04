@@ -1,0 +1,6 @@
+<module name="jaggery-utils" xmlns="http://wso2.org/projects/jaggery/module.xml">
+    <script>
+        <name>reflection</name>
+        <path>scripts/reflection/reflection.js</path>
+    </script>
+</module>
