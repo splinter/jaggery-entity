@@ -20,22 +20,6 @@ Defining an Entity
   
 ```
 
-### Child Entities
-An Entity can be derived from a parent Entity definition.
-
-```javascript
-
-  var HappyUser=new ef.EntitySchema('User',{
-  
-    props:{
-      hasCake:Boolean,
-      cakeType:String
-    }
-    
-  });
-  
-```
-
 ### Virtual properties
 It is possible for an Entity Schema to define properties that are not persisted to a database using the virtual function
 
@@ -70,7 +54,7 @@ A static method will not be called in the context of the Entity that has invoked
 
 ```javascript
   var logger=require('entity').log; //Logs all entity life-cycle actions
-  HappyUser.plug(logger);
+  HappyUser.plugin(logger);
 ```
 
 
