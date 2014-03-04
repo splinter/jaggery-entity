@@ -199,6 +199,43 @@ init ->  created -> changed -> deleted
 
 Plug-ins
 ========
+A plugin can be installed to an Entity Schema by using the plugin method.
+
+###Writing a plug-in
+A plug-in can be written in order to respond to three types of events; pre, to and post.
+
+The basic structure of a plug-in is as follows;
+
+```javascript
+var myPlugin=function(schema,options){
+  
+   schema.pre('save',function(){
+    //Runs before saving
+   });
+   
+   schema.to('save',function(){
+    //Implements the actual saving logic
+   });
+   
+   schema.post('save',function(){
+   //Runs after the saving logic
+   });
+};
+
+```
+
+A couple of important points;
+1. The schema object is a reference to the schema which will be using the plug-in
+2. The options object returns a JSON object that can be passed in when installing the plugin for a schema
+
+The three event types are supported for the following actions;
+1. Save - This method can be invoked by the user to save an entity instance to a datasource.
+2. Init - This method is called internally whenever an Entity is instantiated
+3. Remove - This method can be invoked by the user to destory a given entity instance. What it means to be "destroyed" is dictated by the plugins used with the schema.
+4. Find
+5. FindAll
+
+
 
 
 
