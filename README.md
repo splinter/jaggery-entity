@@ -196,6 +196,9 @@ var myPlugin=function(schema,options){
    schema.post('save',function(){
    //Runs after the saving logic
    });
+   
+   schema.static.find=function(){
+   };
 };
 
 ```
