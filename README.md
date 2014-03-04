@@ -173,14 +173,6 @@ The query method allows more fine grained controll over retrieval of data.
   var result=User.query('SELECT * FROM Users WHERE name LIKE "sam"');
 ```
 
-
-
-Entity Life-cycle
-=================
-
-init ->  created -> changed -> deleted 
-
-
 Plug-ins
 ========
 A plugin can be installed to an Entity Schema by using the plugin method.
