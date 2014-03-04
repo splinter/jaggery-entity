@@ -7,7 +7,7 @@ var entity = {};
 
 
     var log = new Log('jaggery-entity');
-    var utils = require('/modules/utils.js');
+    var utils = require('jaggery-utils');
 
     function EntityManager() {
         this.schemas = {};
