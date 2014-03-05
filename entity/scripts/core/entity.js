@@ -2,11 +2,13 @@
  * Description: The Entity module implements a basic entity management framework
  */
 var entity = {};
+var Schema={};
+var model={};    //Returns a model based on the provide schema name
 
 (function () {
 
 
-    var log = new Log('jaggery-entity');
+    var log = new Log('entity');
     var utils = require('jaggery-utils');
 
     function EntityManager() {
@@ -468,8 +470,8 @@ var entity = {};
     EntitySchema._em = entityManager;
 
 
-    entity.EntitySchema = EntitySchema;
+    Schema = EntitySchema;
     entity.EntityManager = entityManager;
-    entity.Entity = getEntity;
+    model = getEntity;
 
 }());
