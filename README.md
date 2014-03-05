@@ -5,13 +5,10 @@ The jaggery-entity library is a simple script to help manage data objects in Jag
 
 Installation
 ============
-To get started place the following two modules ;
+To get started place the following two modules into the modules directory of your Jaggery server;
 
-1. jaggery-entity
-2. jaggery-utils
-
-in the modules directory of your Jaggery server.
-
+1. entity
+2. utils
 
 Defining an Entity
 ==================
