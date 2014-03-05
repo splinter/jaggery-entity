@@ -20,6 +20,8 @@ Defining an Entity
   
 ```
 
+**Note** : Only String .Number and Boolean types are supported currently.
+
 ### Virtual properties
 It is possible for an Entity Schema to define properties that are not persisted to a database using the virtual function
 
@@ -210,8 +212,18 @@ The three event types are supported for the following actions;
 1. Save :This method can be invoked by the user to save an entity instance to a datasource.
 2. Init  :This method is called internally whenever an Entity is instantiated
 3. Remove :This method can be invoked by the user to destory a given entity instance. What it means to be "destroyed" is dictated by the plugins used with the schema.
-4. Find
-5. FindAll
+
+####Supporting Find and FindAll 
+The Find and FindAll methods can be overriden  by using the overriding the static object ;
+
+```javascript
+	schema.static.find=function(options){
+        };
+
+	schema.static.findAll=function(options){
+ 	};
+```
+
 
 
 
