@@ -155,7 +155,7 @@ Locating an Entity
 A simple query would look like the following;
 
 ```javascript
-  var User=new ef.Entity('User');
+  var User=new entity.model('User');
   User.find({name:'Sam'});  
 ```
 
