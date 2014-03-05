@@ -19,8 +19,8 @@ Defining an Entity
 ### Defining an Entity Schema
 
 ```javascript
-
-  var User=new ef.EntitySchema({
+  var entity=require('entity');
+  var User=new entity.Schema({
     
       id:Number,
       name:String,
@@ -77,7 +77,8 @@ Working with an Entity
 
 
 ```javascript
-  var User=ef.entity('User');
+  var entity=require('entity');
+  var User=entity.model('User');
   var firstUser=new User();
 ```
 
@@ -125,7 +126,7 @@ User.field('name').validate(function(nameValue,nameFieldSchema){
 The diff method returns the difference between two entities of the same type.If the two entities are not of the same type then an error will be thrown.
 
 ```javascript
-  var secondUser=new ef.Entity({
+  var secondUser=new User({
     name:'Ann'
   });
   
