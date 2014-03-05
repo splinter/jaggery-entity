@@ -82,6 +82,12 @@ Working with an Entity
   var firstUser=new User();
 ```
 
+To create an empty entity;
+
+```javascript
+  var someUser=User.create();
+```
+
 ###Setting the value of a property
 
 ```javascript
@@ -234,9 +240,10 @@ The Find and FindAll methods can be overriden  by using the overriding the stati
 
 ```javascript
 	schema.static.find=function(options){
-        };
+	};
 
-	schema.static.findAll=function(options){
+	schema.static.findOne=function(options){
+	
  	};
 ```
 
