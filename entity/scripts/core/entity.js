@@ -2,8 +2,8 @@
  * Description: The Entity module implements a basic entity management framework
  */
 var entity = {};
-var Schema={};
-var model={};    //Returns a model based on the provide schema name
+var Schema = {};
+var model = {};    //Returns a model based on the provide schema name
 
 (function () {
 
@@ -56,6 +56,8 @@ var model={};    //Returns a model based on the provide schema name
     var attachStaticMethods = function (generator, schema) {
         for (var index in schema.static) {
             generator[index] = schema.static[index];
+
+            //schema.static[index].bind(generator);
         }
     };
 
@@ -125,11 +127,12 @@ var model={};    //Returns a model based on the provide schema name
 
         this.methods = {};
         this.static = {};
+        //this._em=EntitySchema._em;
 
-        this.meta.plugins.save = {pre: [], post: [], to:[]};
-        this.meta.plugins.init = {pre: [], post: [],to:[]};
+        this.meta.plugins.save = {pre: [], post: [], to: []};
+        this.meta.plugins.init = {pre: [], post: [], to: []};
         //this.meta.plugins.validate = {pre: [], post: []};
-        this.meta.plugins.remove = {pre: [], post: [],to:[]};
+        this.meta.plugins.remove = {pre: [], post: [], to: []};
 
         //Attach validations
         attachValidations(this);
@@ -164,15 +167,25 @@ var model={};    //Returns a model based on the provide schema name
         }
     };
 
-    var attachDefaultStaticMethods=function(schema){
-       schema.static.find=function(){
+    /**
+     * The function attaches the default static methods
+     * @param schema
+     */
+    var attachDefaultStaticMethods = function (schema) {
+        schema.static.find = function () {
             log.warn('Find method not implemeneted');
             return [];
-       };
+        };
 
-       schema.static.findAll=function(){
+        schema.static.findOne = function () {
             log.warn('FindAll method not implemented');
-       };
+        };
+
+
+        schema.static.create = function () {
+            var generator= getEntity(schema.meta.name);
+            return new generator();
+        };
     };
 
     /**
@@ -223,7 +236,7 @@ var model={};    //Returns a model based on the provide schema name
         this.meta.plugins[action].post.push(handler);
     };
 
-    EntitySchema.prototype.to=function(action,handler){
+    EntitySchema.prototype.to = function (action, handler) {
         this.meta.plugins[action].to.push(handler);
     };
 
@@ -245,12 +258,12 @@ var model={};    //Returns a model based on the provide schema name
 
         var preSave = this.meta.plugins.save.pre;
         var postSave = this.meta.plugins.save.post;
-        var toSave=this.meta.plugins.save.to;
-        var action='save';
+        var toSave = this.meta.plugins.save.to;
+        var action = 'save';
 
-        executePluginList('pre'+action,entity, preSave);
-        executePluginList(action,entity,toSave);
-        executePluginList('post'+action,entity, postSave);
+        executePluginList('pre' + action, entity, preSave);
+        executePluginList(action, entity, toSave);
+        executePluginList('post' + action, entity, postSave);
     };
 
     /**
@@ -261,12 +274,48 @@ var model={};    //Returns a model based on the provide schema name
         var entity = entity.toJSON();
         var pre = this.meta.plugins.init.pre;
         var post = this.meta.plugins.init.post;
-        var to=this.meta.plugins.init.to;
-        var action='init';
+        var to = this.meta.plugins.init.to;
+        var action = 'init';
 
-        executePluginList('pre'+action,entity, pre);
-        executePluginList(action,entity,to);
-        executePluginList('post'+action,entity, post);
+        executePluginList('pre' + action, entity, pre);
+        executePluginList(action, entity, to);
+        executePluginList('post' + action, entity, post);
+    };
+
+    /**
+     * The function is called whenever the current entity needs to be removed.It will call any plugins
+     * registered to remove the entity.
+     */
+    EntitySchema.prototype.remove = function (entity) {
+        var entity = entity.toJSON();
+        var pre = this.meta.plugins.remove.pre;
+        var post = this.meta.plugins.remove.post;
+        var to = this.meta.plugins.remove.to;
+        var action = 'remove';
+
+        executePluginList('pre' + action, entity, pre);
+        executePluginList(action, entity, to);
+        executePluginList('post' + action, entity, post);
+    };
+
+
+    /**
+     * The function creates properties in an entity instance
+     * @param entity
+     */
+    EntitySchema.prototype.fillProps = function (entity) {
+        for (var key in this.props) {
+            entity[key] = this.props[key].default;
+        }
+    }
+
+    /**
+     * The function allows a plugin to install itself for the schema
+     * @param plugin  The plug-in to be installed to the schema
+     */
+    EntitySchema.prototype.plugin = function (plugin, options) {
+        var options = options || {};
+        plugin(this, options);
     };
 
     /**
@@ -311,44 +360,6 @@ var model={};    //Returns a model based on the provide schema name
         });
     };
 
-    /**
-     * The function is called whenever the current entity needs to be removed.It will call any plugins
-     * registered to remove the entity.
-     */
-    EntitySchema.prototype.remove = function (entity) {
-        var entity = entity.toJSON();
-        var pre = this.meta.plugins.remove.pre;
-        var post = this.meta.plugins.remove.post;
-        var to=this.meta.plugins.remove.to;
-        var action='remove';
-
-        executePluginList('pre'+action,entity, pre);
-        executePluginList(action,entity,to);
-        executePluginList('post'+action,entity, post);
-    };
-
-
-
-    /**
-     * The function creates properties in an entity instance
-     * @param entity
-     */
-    EntitySchema.prototype.fillProps = function (entity) {
-        for (var key in this.props) {
-            entity[key] = this.props[key].default;
-        }
-    }
-
-    /**
-     * The function allows a plugin to install itself for the schema
-     * @param plugin  The plug-in to be installed to the schema
-     */
-    EntitySchema.prototype.plugin = function (plugin, options) {
-        var options = options || {};
-        plugin(this, options);
-    };
-
-
     var initPlugins = function (action, plugins) {
         if (!plugins.hasOwnProperty(action)) {
             plugins[action] = {};
@@ -362,16 +373,16 @@ var model={};    //Returns a model based on the provide schema name
      * giving plug-in the option to continue to the next or stop processing
      * @param plugins
      */
-    var executePluginList = function (action,entity, plugins) {
+    var executePluginList = function (action, entity, plugins) {
         if (plugins.length == 0) {
-            log.warn('No plugins defined for '+action);
+            log.warn('No plugins defined for ' + action);
             return;
         }
 
         var index = 0;
 
         var next = function () {
-            var plugin=plugins[index];
+            var plugin = plugins[index];
             index++;
 
             if (plugins.length < index) {
@@ -399,8 +410,11 @@ var model={};    //Returns a model based on the provide schema name
 
             utils.reflection.copyProps(options, this);
 
+            log.info('Schema '+schema.meta.name);
+
             //Bind the methods to the object
             for (var index in schema.methods) {
+                log.info('Adding instance method '+index);
                 this[index] = schema.methods[index];
             }
 
@@ -456,16 +470,17 @@ var model={};    //Returns a model based on the provide schema name
         return entityManager.entity(schemaName);
     };
 
-    var entityManager=new EntityManager();;
-   /* if (!session.get('enManager')) {
-        log.info('Caching Entity Manager');
-        entityManager = new EntityManager();
-        session.put('enManager', entityManager);
-    }
-    else {
-        log.info('Using cached Entity Manager');
-        entityManager = session.get('enManager');
-    } */
+    var entityManager = new EntityManager();
+    ;
+    /* if (!session.get('enManager')) {
+     log.info('Caching Entity Manager');
+     entityManager = new EntityManager();
+     session.put('enManager', entityManager);
+     }
+     else {
+     log.info('Using cached Entity Manager');
+     entityManager = session.get('enManager');
+     } */
 
     EntitySchema._em = entityManager;
 
