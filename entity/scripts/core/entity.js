@@ -9,7 +9,7 @@ var model = {};    //Returns a model based on the provide schema name
 
 
     var log = new Log('entity');
-    var utils = require('jaggery-utils');
+    var utils = require('utils');
 
     function EntityManager() {
         this.schemas = {};
