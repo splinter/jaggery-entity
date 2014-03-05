@@ -240,9 +240,10 @@ The Find and FindAll methods can be overriden  by using the overriding the stati
 
 ```javascript
 	schema.static.find=function(options){
-        };
+	};
 
 	schema.static.findOne=function(options){
+	
  	};
 ```
 
