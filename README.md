@@ -126,7 +126,6 @@ User.field('name').validate(function(nameValue,nameFieldSchema){
 The diff method returns the difference between two entities of the same type.If the two entities are not of the same type then an error will be thrown.
 
 ```javascript
-  var User=require('entity');
   var secondUser=new User({
     name:'Ann'
   });
