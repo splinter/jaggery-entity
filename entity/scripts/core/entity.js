@@ -4,6 +4,7 @@
 var entity = {};
 var Schema = {};
 var model = {};    //Returns a model based on the provide schema name
+var findSchema={};
 
 (function () {
 
@@ -45,6 +46,12 @@ var model = {};    //Returns a model based on the provide schema name
             return generator;
         }
         return null;
+    };
+
+    EntityManager.prototype.findSchema=function(schemaName){
+        if(this.generators.hasOwnProperty(schemaName)){
+            return this.schemas[schemaName];
+        }
     };
 
     /**
@@ -470,6 +477,11 @@ var model = {};    //Returns a model based on the provide schema name
         return entityManager.entity(schemaName);
     };
 
+
+    var getSchema=function(schemaName){
+        return entityManager.findSchema(schemaName);
+    };
+
     var entityManager = new EntityManager();
     ;
     /* if (!session.get('enManager')) {
@@ -488,5 +500,6 @@ var model = {};    //Returns a model based on the provide schema name
     Schema = EntitySchema;
     entity.EntityManager = entityManager;
     model = getEntity;
+    findSchema=getSchema;
 
 }());
