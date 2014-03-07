@@ -4,7 +4,7 @@
 var entity = {};
 var Schema = {};
 var model = {};    //Returns a model based on the provide schema name
-var findSchema={};
+var schema={};
 
 (function () {
 
@@ -122,11 +122,6 @@ var findSchema={};
     };
 
     function EntitySchema(entityName, entityProps, entityMeta) {
-
-        //If only the schema name is provided,return and instance of registered schema
-        if(arguments.length==1){
-            return EntitySchema._em.findSchema(entityName);
-        }
 
         this.meta = entityMeta || {};
         this.props = entityProps || {};
@@ -506,6 +501,6 @@ var findSchema={};
     Schema = EntitySchema;
     entity.EntityManager = entityManager;
     model = getEntity;
-    findSchema=getSchema;
+    schema=getSchema;
 
 }());
