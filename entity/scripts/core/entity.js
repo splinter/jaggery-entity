@@ -122,6 +122,12 @@ var findSchema={};
     };
 
     function EntitySchema(entityName, entityProps, entityMeta) {
+
+        //If only the schema name is provided,return and instance of registered schema
+        if(arguments.length==1){
+            return EntitySchema._em.findSchema(entityName);
+        }
+
         this.meta = entityMeta || {};
         this.props = entityProps || {};
         this.meta.name = entityName;
