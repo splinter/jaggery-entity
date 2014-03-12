@@ -3,4 +3,8 @@
         <name>reflection</name>
         <path>scripts/reflection/reflection.js</path>
     </script>
+    <script>
+        <name>file</name>
+        <path>scripts/file/file.js</path>
+    </script>
 </module>
