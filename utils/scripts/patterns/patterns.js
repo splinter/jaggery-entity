@@ -28,6 +28,8 @@ var patterns = {};
         else if (plugin instanceof Object) {
             this.plugins.push(plugin);
         }
+
+        return this;
     };
 
     GenericPipe.prototype.resolve = function (context, req, res, session) {
