@@ -7,4 +7,8 @@
         <name>file</name>
         <path>scripts/file/file.js</path>
     </script>
+    <script>
+        <name>patterns</name>
+        <path>scripts/patterns/patterns.js</path>
+    </script>
 </module>
