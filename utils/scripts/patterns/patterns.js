@@ -4,6 +4,7 @@ var patterns = {};
 
     var DEF_ERR_ARITY = 3;
     var DEF_HANDLE_ARITY = 2;
+    var log = new Log('utils.patterns.GenericPipe');
 
     function GenericPipe(options) {
         this.errHandlerArity = DEF_ERR_ARITY || options.errArity;
@@ -33,7 +34,9 @@ var patterns = {};
         context._req = req;
         context._res = res;
         context._session = session;
+        log.info('Starting plugin chain');
         handle(context, this.plugins, this.errHandlerArity, this.handlerArity);
+        log.info('End of plugin chain');
     };
 
     var handle = function (context, plugins, errArity, handlerArity) {
@@ -47,6 +50,7 @@ var patterns = {};
 
             //Check if there is a plugin
             if (!currentPlugin) {
+                log.warn('No plugin found at index: ' + index);
                 return;
             }
 

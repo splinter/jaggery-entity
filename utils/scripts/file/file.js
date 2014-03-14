@@ -15,7 +15,6 @@ var file={};
 
         for (var index in files) {
             if (files[index].getName() == fileName) {
-                log.info('File: '+fileName+' found.');
                 return files[index];
             }
         }
