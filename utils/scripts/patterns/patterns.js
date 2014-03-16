@@ -10,7 +10,8 @@ var patterns = {};
         this.errHandlerArity = DEF_ERR_ARITY || options.errArity;
         this.handlerArity = DEF_HANDLE_ARITY || options.handlerArity;
         this.plugins = [];
-
+        this.finalHandler = function () {
+        };
     }
 
 
@@ -32,16 +33,21 @@ var patterns = {};
         return this;
     };
 
-    GenericPipe.prototype.resolve = function (context, req, res, session) {
-        context._req = req;
-        context._res = res;
-        context._session = session;
-        log.info('Starting plugin chain');
-        handle(context, this.plugins, this.errHandlerArity, this.handlerArity);
-        log.info('End of plugin chain');
+    GenericPipe.prototype.finally = function (plugin) {
+        this.finalHandler = plugin;
+        return this;
     };
 
-    var handle = function (context, plugins, errArity, handlerArity) {
+    GenericPipe.prototype.resolve = function (data, req, res, session) {
+        var context = {};
+        context.req = req;
+        context.res = res;
+        context.session = session;
+        context.data = data;
+        handle(context, this.plugins, this.errHandlerArity, this.handlerArity, this.finalHandler);
+    };
+
+    var handle = function (context, plugins, errArity, handlerArity, finallyHandler) {
         var index = 0;
         var currentPlugin;
 
@@ -60,7 +66,12 @@ var patterns = {};
             if (err) {
                 //Can the current plugin handle the err
                 if (currentPlugin.handle.length == errArity) {
-                    currentPlugin.handle(err, context, recursiveHandle);
+                    try {
+                        currentPlugin.handle(err, context, recursiveHandle);
+                    }
+                    catch (e) {
+                        recursiveHandle(e);
+                    }
                 }
                 else {
                     recursiveHandle(err);
@@ -69,7 +80,13 @@ var patterns = {};
             //There is no error so try to invoke the current plugin
             else {
                 if (currentPlugin.handle.length == handlerArity) {
-                    currentPlugin.handle(context, recursiveHandle);
+                    try {
+
+
+                        currentPlugin.handle(context, recursiveHandle);
+                    } catch (e) {
+                        recursiveHandle(e);
+                    }
                 }
                 else {
                     recursiveHandle();
@@ -78,6 +95,7 @@ var patterns = {};
         };
 
         recursiveHandle();
+        finallyHandler(context);
     };
 
     patterns.GenericPipe = GenericPipe;
