@@ -484,7 +484,7 @@ var schema={};
     };
 
     var entityManager = new EntityManager();
-    ;
+
     /* if (!session.get('enManager')) {
      log.info('Caching Entity Manager');
      entityManager = new EntityManager();
