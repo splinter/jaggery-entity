@@ -48,6 +48,19 @@ var reflection = {};
         }
     };
 
+    /**
+     * The function determines if a property is hidden based on _
+     * @param key
+     * @returns {boolean}
+     */
+    reflection.isHiddenProp=function(key){
+       if(key==''){
+           return false;
+       }
+
+       return (key.charAt(0)=='_')?true:false;
+    };
+
     var getDiff=function(a,b,diff){
 
     };

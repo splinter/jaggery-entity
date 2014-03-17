@@ -41,6 +41,14 @@ var file={};
     };
 
     /**
+     * The function obtains a list of files that are not directories
+     * @param dir
+     */
+    file.getAllFiles=function(dir){
+
+    };
+
+    /**
      * The function returns a list of all sub directories in a given directory
      * @param dir The root directory
      * @return: An array containing all sub directories
