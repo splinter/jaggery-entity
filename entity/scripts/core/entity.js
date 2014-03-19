@@ -1,10 +1,11 @@
 /**
  * Description: The Entity module implements a basic entity management framework
+ * Created Date: 10/3/2014
  */
 var entity = {};
 var Schema = {};
 var model = {};    //Returns a model based on the provide schema name
-var schema={};
+var schema = {};
 
 (function () {
 
@@ -48,8 +49,8 @@ var schema={};
         return null;
     };
 
-    EntityManager.prototype.findSchema=function(schemaName){
-        if(this.generators.hasOwnProperty(schemaName)){
+    EntityManager.prototype.findSchema = function (schemaName) {
+        if (this.generators.hasOwnProperty(schemaName)) {
             return this.schemas[schemaName];
         }
     };
@@ -157,42 +158,66 @@ var schema={};
      */
     var resolveTypes = function (props) {
 
-        utils.reflection.inspect(props,props,function(from,to,key){
-            var fieldType;
-            //If it is a function it is one of the in built types
-            if (typeof from[key] == 'function') {
-                log.info('key '+key+' is a function');
-                //We need to create an instance of the FieldType
-                //fieldType = new FieldType({type: from[key]});
-            }
-            else {
-                log.info('key '+key+' is an object');
-                //The user has provided an object, fill in any missing values
-                //fieldType = new FieldType(from[key]);
-            }
+        var keys = Object.keys(props);
 
-            from[key] = fieldType;
-        });
-
-        log.info(stringify(props));
-
-       /* var fieldType;
-
-        for (var key in props) {
-
-            //If it is a function it is one of the in built types
-            if (typeof props[key] == 'function') {
-                //We need to create an instance of the FieldType
-                fieldType = new FieldType({type: props[key]});
-            }
-            else {
-                //The user has provided an object, fill in any missing values
-                fieldType = new FieldType(props[key]);
-            }
-
-            props[key] = fieldType;
-        }*/
+        for (var index in keys) {
+            recurseResolveType(props, keys[index]);
+        }
     };
+
+    /**
+     * The function recursively fills in the FieldType data of fields
+     * @param obj The object to be examined
+     * @param key The current property of the object to be examined
+     */
+    var recurseResolveType = function (obj, key) {
+        var type = typeof obj[key];
+        if (type == 'function') {
+            obj[key] = new FieldType({type: obj[key]});
+        }
+        else {
+            //Determine if it is a nested object
+            if (isNestedObject(obj[key])) {
+
+                //Go through each key in the nested object
+                var keys = Object.keys(obj[key]);
+
+                for (var index in keys) {
+                    recurseResolveType(obj[key], keys[index]);
+                }
+            }
+            else {
+                //Check if it is a type definition
+                obj[key] = new FieldType(obj[key]);
+            }
+
+        }
+    };
+
+    /**
+     *The function determines if a provided object is a nested object by
+     1. Checking if it is an object
+     2. If it is an object it should not have a property called type or if it does type should declare its own definition
+     @return: True if the object is a nested type,else false
+     */
+    var isNestedObject = function (obj) {
+        return((obj.constructor.name == 'Object') && ((!obj.hasOwnProperty('type')) || (isTypeDefinition(obj))));
+    };
+
+    /**
+     * The function checks if the provided object has a type definition .i.e. a child property
+     * @param obj The object to be inspected
+     * @returns True if there is a child property
+     */
+    var isTypeDefinition = function (obj) {
+        if (obj.type) {
+            if (obj.type.type) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     /**
      * The function attaches the default static methods
@@ -210,7 +235,7 @@ var schema={};
 
 
         schema.static.create = function () {
-            var generator= getEntity(schema.meta.name);
+            var generator = getEntity(schema.meta.name);
             return new generator();
         };
     };
@@ -220,13 +245,11 @@ var schema={};
      */
     var resolveDefaultValidations = function (fieldSchema) {
         if (fieldSchema.required) {
-            log.info('Adding required field validator');
             fieldSchema.validations.push({msg: 'Required field', validator: requiredFieldValidator});
         }
     };
 
     var requiredFieldValidator = function (fieldSchema, fieldValue) {
-        log.info('Checking required field');
         if ((!fieldValue) || (fieldValue == '')) {
             return false;
         }
@@ -240,13 +263,44 @@ var schema={};
      * @returns {*}
      */
     EntitySchema.prototype.field = function (fieldName) {
+
+        var field = null;
+
         for (var key in this.props) {
-            if (key == fieldName) {
-                return this.props[key];
+            field = recurseLocateField(this.props, fieldName, key)
+
+            //Stop the search if the field was located
+            if (field) {
+                return field;
             }
         }
 
-        return null;
+        return field;
+    };
+
+    /**
+     * The function is used to recursively locate a field in the schema
+     * @param entity
+     * @param fieldName
+     * @param key
+     */
+    var recurseLocateField = function (props, fieldName, key) {
+        if (isFieldType(props[key])) {
+            if (key == fieldName) {
+                return props[key];
+            }
+        }
+        else {
+            //Go through all the properties
+            var keys = Object.keys(props[key]);
+            entity[key] = {};
+
+            for (var index in keys) {
+                recurseLocateField(props[key], fieldName, keys[index]);
+            }
+
+            return null;
+        }
     };
 
     EntitySchema.prototype.pre = function (action, handler) {
@@ -332,8 +386,39 @@ var schema={};
      */
     EntitySchema.prototype.fillProps = function (entity) {
         for (var key in this.props) {
-            entity[key] = this.props[key].default;
+            //entity[key] = this.props[key].default;
+            recursiveFillProps(this.props, entity, key);
         }
+    };
+
+    /**
+     * The function is used to recursively populate an empty object with properties of the schema
+     * @param props The properties to be mirrored in the object
+     * @param entity The object which will be provided to the user
+     * @param key The current property to be examined
+     */
+    var recursiveFillProps = function (props, entity, key) {
+        if (isFieldType(props[key])) {
+            entity[key] = props[key].default;
+        }
+        else {
+            //Go through all the properties
+            var keys = Object.keys(props[key]);
+            entity[key] = {};
+            for (var index in keys) {
+
+                recursiveFillProps(props[key], entity[key], keys[index]);
+            }
+        }
+    };
+
+    /**
+     * The function checks whether the provided object is of the FieldType
+     * @param obj The object to examined
+     * @returns True if the object is a FieldType object
+     */
+    var isFieldType = function (obj) {
+        return (obj.constructor.name == 'FieldType') ? true : false;
     };
 
     /**
@@ -357,34 +442,64 @@ var schema={};
 
             log.info('Performing validations');
 
-            //Go through each field and invoke the validations
             for (var key in schema.props) {
-
-                log.info('Validating ' + key + '= ' + entity[key]);
-
-                var validations = schema.props[key].validations;
-
-                //Execute all validators defined in the
-                for (var index in validations) {
-
-                    var isFailed = validations[index].validator(entity[key], schema.props[key]);
-
-                    //Record the error
-                    if (isFailed) {
-
-                        if (!errors[key]) {
-                            errors[key] = {};
-                        }
-
-                        errors[key].value = entity[key];
-                        errors[key].message = validations[index].msg;
-                    }
-                }
+                recurseDoValidate(entity, schema.props, key, {});
             }
             next();
             log.info('Finished validating....');
             log.info(errors);
         });
+    };
+
+    /**
+     * The function recursively performs some validation
+     * @param entity
+     * @param props
+     * @param key
+     * @param errors
+     */
+    var recurseDoValidate = function (entity, props, key, errors) {
+        if (isFieldType(props[key])) {
+            validateField(props[key], entity[key], key, errors);
+        }
+        else {
+            //Go through all the properties
+            var keys = Object.keys(props[key]);
+
+            for (var index in keys) {
+                recurseDoValidate(entity[key], props[key], keys[index], errors);
+            }
+        }
+    };
+
+    /**
+     * The function is used to validate a field value based on the schema
+     * and then record the validation failure to an object.
+     * @param field
+     * @param value
+     * @param fieldName
+     * @param errors
+     * @returns {*}
+     */
+    var validateField = function (field, value, fieldName, errors) {
+
+        var validations = field.validations;
+        var validation;
+
+        for (var index in validations) {
+            validation = validations[index];
+
+            if (!validation.validator(value, field)) {
+
+                if (!errors[fieldName]) {
+                    errors[fieldName] = {};
+                }
+
+                errors[fieldName].value = value;
+                errors[fieldName].msg = validation.msg;
+            }
+
+        }
     };
 
     var initPlugins = function (action, plugins) {
@@ -395,6 +510,8 @@ var schema={};
         }
     };
 
+    var ERR_ARITY=3;
+    var HANDLER_ARITY=2;
     /**
      * The function executes each plugin in an array of plug-ins while
      * giving plug-in the option to continue to the next or stop processing
@@ -408,15 +525,31 @@ var schema={};
 
         var index = 0;
 
-        var next = function () {
+        var next = function (err) {
             var plugin = plugins[index];
             index++;
 
-            if (plugins.length < index) {
+            if(!plugin){
+                log.warn('End of plugin chain');
                 return;
             }
-            else {
-                return plugin(entity, next);
+
+            if(err){
+                //Check if the current plugin can handle errors
+                if(plugin.length==ERR_ARITY){
+                    plugin(err,entity,next);
+                }
+                else{
+                    next(err);
+                }
+            }
+            else{
+                if(plugin.length==HANDLER_ARITY){
+                    plugin(entity,next);
+                }
+                else{
+                    next();
+                }
             }
         };
 
@@ -435,13 +568,12 @@ var schema={};
             //Add the properties that should be present based on the schema
             schema.fillProps(this);
 
-            utils.reflection.copyProps(options, this);
-
-            log.info('Schema '+schema.meta.name);
+            //utils.reflection.copyProps(options, this);
+            utils.reflection.copyAllPropValues(options, this);
 
             //Bind the methods to the object
             for (var index in schema.methods) {
-                log.info('Adding instance method '+index);
+                log.info('Adding instance method ' + index);
                 this[index] = schema.methods[index];
             }
 
@@ -466,12 +598,17 @@ var schema={};
     };
 
     /**
-     * The toJSON method
-     * @returns {{}}
+     * The method will create a simple JSON object of the entity.It accepts
+     * an optional boolean value; if true it will ignore hidden properties,else all properties will
+     * be added to the resulting object.
+     * @isPublicOnly (Optional) It is true by default
+     * @returns A JSON object
      */
     var toJSON = function () {
         var data = {};
-        utils.reflection.copyProps(this, data);
+        utils.reflection.copyAllPropValues(this, data);
+
+        //utils.reflection.copyProps(this, data);
         return data;
     };
 
@@ -498,7 +635,7 @@ var schema={};
     };
 
 
-    var getSchema=function(schemaName){
+    var getSchema = function (schemaName) {
         return entityManager.findSchema(schemaName);
     };
 
@@ -520,6 +657,7 @@ var schema={};
     Schema = EntitySchema;
     entity.EntityManager = entityManager;
     model = getEntity;
-    schema=getSchema;
+    schema = getSchema;
 
 }());
+
