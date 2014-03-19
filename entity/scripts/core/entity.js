@@ -157,7 +157,26 @@ var schema={};
      */
     var resolveTypes = function (props) {
 
-        var fieldType;
+        utils.reflection.inspect(props,props,function(from,to,key){
+            var fieldType;
+            //If it is a function it is one of the in built types
+            if (typeof from[key] == 'function') {
+                log.info('key '+key+' is a function');
+                //We need to create an instance of the FieldType
+                //fieldType = new FieldType({type: from[key]});
+            }
+            else {
+                log.info('key '+key+' is an object');
+                //The user has provided an object, fill in any missing values
+                //fieldType = new FieldType(from[key]);
+            }
+
+            from[key] = fieldType;
+        });
+
+        log.info(stringify(props));
+
+       /* var fieldType;
 
         for (var key in props) {
 
@@ -172,7 +191,7 @@ var schema={};
             }
 
             props[key] = fieldType;
-        }
+        }*/
     };
 
     /**
@@ -315,7 +334,7 @@ var schema={};
         for (var key in this.props) {
             entity[key] = this.props[key].default;
         }
-    }
+    };
 
     /**
      * The function allows a plugin to install itself for the schema

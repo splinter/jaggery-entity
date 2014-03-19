@@ -35,7 +35,19 @@ var reflection = {};
 
     reflection.copyAllPropValues = function (from, to) {
         recurse(from, to, function (from, to, key) {
-            to[key] = from[key];
+
+            //Create an instance if the property does not exist
+            if (!to[key]) {
+                to[key] = {};
+            }
+
+            //Copy the values over
+            if (!(from[key]instanceof Object)) {
+                to[key] = from[key];
+            }
+            else {
+                log.warn('Not copying values of key: ' + key);
+            }
         });
     };
 
@@ -46,11 +58,23 @@ var reflection = {};
      */
     reflection.copyPublicPropValues = function (from, to) {
         recurse(from, to, function (from, to, key) {
-            if (key.charAt(0) != '_') {
+            //Ignore any hidden properties
+            if (key.charAt(0) == '_') {
+                log.warn('Drop key: ' + key);
+                return;
+            }
+
+            //Create an instance if the property does not exist
+            if (!to[key]) {
+                to[key] = {};
+            }
+
+            //Copy the values over
+            if (!(from[key]instanceof Object)) {
                 to[key] = from[key];
             }
             else {
-                log.warn('Omitting copying key: ' + key);
+                log.warn('Not copying values of key: ' + key);
             }
         });
     };
@@ -67,15 +91,18 @@ var reflection = {};
      * @param cb
      */
     var recurse = function (root, clone, cb) {
+        var key;
         //Check if the root is an object
         if (!(root instanceof Object)) {
             return;
         }
         else {
+            var keys = Object.keys(root);
             //Go through all the other keys in the current root
-            for (var key in root) {
+            for (var index in keys) {
+                key = keys[index];
                 cb(root, clone, key);
-                recurse(root[key], clone[key],cb);
+                recurse(root[key], clone[key], cb);
             }
         }
     };
