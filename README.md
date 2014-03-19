@@ -203,15 +203,15 @@ The basic structure of a plug-in is as follows;
 ```javascript
 var myPlugin=function(schema,options){
   
-   schema.pre('save',function(){
+   schema.pre('save',function(entity,next){
     //Runs before saving
    });
    
-   schema.to('save',function(){
+   schema.to('save',function(entity,next){
     //Implements the actual saving logic
    });
    
-   schema.post('save',function(){
+   schema.post('save',function(entity,next){
    //Runs after the saving logic
    });
    
@@ -231,6 +231,12 @@ The three event types are supported for the following actions;
 1. Save :This method can be invoked by the user to save an entity instance to a datasource.
 2. Init  :This method is called internally whenever an Entity is instantiated
 3. Remove :This method can be invoked by the user to destory a given entity instance. What it means to be "destroyed" is dictated by the plugins used with the schema.
+
+The handlers which are plugged in for each event can be of two types;
+1. Error handlers
+2. Logic handlers
+
+The error handlers are only invoked if one of the logic handlers throws an error or if the next method is invoked with an object.
 
 ####Supporting Find and FindAll 
 The Find and FindAll methods can be overriden  by using the overriding the static object ;
