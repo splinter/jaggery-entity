@@ -68,6 +68,27 @@ A static method will not be called in the context of the Entity that has invoked
   HappyUser.plugin(logger);
 ```
 
+### Adding a new field 
+
+A new field can be added by using the add method;
+
+```javascript
+  var UserSchema=entity.schema('User');
+  UserSchema.add({ name: String});
+```
+
+You can also add nested objects as follows;
+
+```javascript
+  UserSchema.add({
+  	location:{
+  		address1:String,
+  		address2:{type:String}
+  	}
+  });
+```
+
+
 
 Working with an Entity
 ======================
