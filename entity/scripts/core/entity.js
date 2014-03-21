@@ -354,6 +354,10 @@ var schema = {};
         }
     };
 
+    EntitySchema.prototype.getModel=function(){
+        return EntitySchema._em.entity(this.meta.name);
+    };
+
     EntitySchema.prototype.save = function (entity) {
         //var entity = entity.toJSON();
 
