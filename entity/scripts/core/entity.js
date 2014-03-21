@@ -1,6 +1,5 @@
 /**
  * Description: The Entity module implements a basic entity management framework
- * Created Date: 10/3/2014
  */
 var entity = {};
 var Schema = {};
@@ -234,7 +233,7 @@ var schema = {};
         };
 
 
-        schema.static.create = function () {
+        schema.static.create = function (options) {
             var generator = getEntity(schema.meta.name);
             return new generator();
         };
@@ -325,17 +324,38 @@ var schema = {};
      * The function allows a plugin to define extra properties
      * @param options An object containing properties to be added to the schema
      */
-    EntitySchema.prototype.add = function (options) {
+    EntitySchema.prototype.add = function (options, entity) {
+
         resolveTypes(options);
 
         //Add each property in the options object to the properties
         for (var key in options) {
             this.props[key] = options[key];
         }
+
+        //if the user has given an entity then add the new properties to the object
+        if (entity) {
+
+            for (var key in options) {
+                recursiveFillProps(options, entity, key);
+            }
+        }
+    };
+
+    /**
+     * The function copies the provided options only to the current entity
+     * @param options  The field properties to be added
+     * @param entity  The entity instance to be modified
+     */
+    EntitySchema.prototype.addToEntity = function (options, entity) {
+        for (var key in options) {
+            //entity[key] = this.props[key].default;
+            recursiveFillProps(options, entity, key);
+        }
     };
 
     EntitySchema.prototype.save = function (entity) {
-        var entity = entity.toJSON();
+        //var entity = entity.toJSON();
 
         var preSave = this.meta.plugins.save.pre;
         var postSave = this.meta.plugins.save.post;
@@ -352,7 +372,7 @@ var schema = {};
      * @param entity  The entity which has invoked the init method
      */
     EntitySchema.prototype.init = function (entity) {
-        var entity = entity.toJSON();
+        //var entity = entity;
         var pre = this.meta.plugins.init.pre;
         var post = this.meta.plugins.init.post;
         var to = this.meta.plugins.init.to;
@@ -368,7 +388,7 @@ var schema = {};
      * registered to remove the entity.
      */
     EntitySchema.prototype.remove = function (entity) {
-        var entity = entity.toJSON();
+        //var entity = entity.toJSON();
         var pre = this.meta.plugins.remove.pre;
         var post = this.meta.plugins.remove.post;
         var to = this.meta.plugins.remove.to;
@@ -445,9 +465,8 @@ var schema = {};
             for (var key in schema.props) {
                 recurseDoValidate(entity, schema.props, key, {});
             }
+
             next();
-            log.info('Finished validating....');
-            log.info(errors);
         });
     };
 
@@ -510,8 +529,8 @@ var schema = {};
         }
     };
 
-    var ERR_ARITY=3;
-    var HANDLER_ARITY=2;
+    var ERR_ARITY = 3;
+    var HANDLER_ARITY = 2;
     /**
      * The function executes each plugin in an array of plug-ins while
      * giving plug-in the option to continue to the next or stop processing
@@ -529,25 +548,25 @@ var schema = {};
             var plugin = plugins[index];
             index++;
 
-            if(!plugin){
+            if (!plugin) {
                 log.warn('End of plugin chain');
                 return;
             }
 
-            if(err){
+            if (err) {
                 //Check if the current plugin can handle errors
-                if(plugin.length==ERR_ARITY){
-                    plugin(err,entity,next);
+                if (plugin.length == ERR_ARITY) {
+                    plugin(err, entity, next);
                 }
-                else{
+                else {
                     next(err);
                 }
             }
-            else{
-                if(plugin.length==HANDLER_ARITY){
-                    plugin(entity,next);
+            else {
+                if (plugin.length == HANDLER_ARITY) {
+                    plugin(entity, next);
                 }
-                else{
+                else {
                     next();
                 }
             }
@@ -660,4 +679,3 @@ var schema = {};
     schema = getSchema;
 
 }());
-
