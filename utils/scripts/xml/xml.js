@@ -2,6 +2,30 @@ var xml = {};
 
 (function () {
 
+
+    /*
+     The method is used to create a JSON object using
+     an xml object.
+     @xmlElement: An xml element object to be processed
+     @return: A pseudo object containing the properties of the
+     xml element.
+     */
+    var createJSONObject = function (xmlElement) {
+
+        var pseudo = {};
+
+        //Extract all attributes
+        var attributes = xmlElement.@*;
+
+        //Fill the pseudo object with the attributes of the element
+        for (var attributeKey in attributes) {
+            var attribute = attributes[attributeKey];
+            pseudo[attribute.localName()] = attribute.toString();
+        }
+
+        return pseudo;
+    };
+
     /*
      The function converts an E4X Xml object to a JSON object
      This function has been adapted from the work of Oleg Podsechin available at
