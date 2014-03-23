@@ -18,15 +18,18 @@ var patterns = {};
     /**
      *The function registers the provided plugin
      */
-    GenericPipe.prototype.plug = function (plugin) {
+    GenericPipe.prototype.plug = function (plugin, options) {
+        var options = options || {};
         //Only a function
         if (plugin instanceof Function) {
             this.plugins.push({
-                handle: plugin
+                handle: plugin,
+                options: options
             });
         }
         //Is it a plugin object
         else if (plugin instanceof Object) {
+            plugin.options = options;
             this.plugins.push(plugin);
         }
 
@@ -54,6 +57,7 @@ var patterns = {};
         var recursiveHandle = function (err) {
 
             currentPlugin = plugins[index];
+
             index++;
 
             //Check if there is a plugin
@@ -62,12 +66,15 @@ var patterns = {};
                 return;
             }
 
+            //Populate the options object for the plugin
+            context.options=currentPlugin.options;;
+
             //Check if an error has been provided
             if (err) {
                 //Can the current plugin handle the err
                 if (currentPlugin.handle.length == errArity) {
                     try {
-                        currentPlugin.handle(err, context, recursiveHandle);
+                        currentPlugin.handle(err, context,recursiveHandle);
                     }
                     catch (e) {
                         recursiveHandle(e);
@@ -83,7 +90,7 @@ var patterns = {};
                     try {
 
 
-                        currentPlugin.handle(context, recursiveHandle);
+                        currentPlugin.handle(context,recursiveHandle);
                     } catch (e) {
                         recursiveHandle(e);
                     }
