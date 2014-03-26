@@ -46,7 +46,7 @@ var reflection = {};
                 to[key] = from[key];
             }
             else {
-                log.warn('Not copying values of key: ' + key);
+                log.debug('Not copying values of key: ' + key);
             }
         });
     };

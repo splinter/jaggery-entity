@@ -542,7 +542,7 @@ var schema = {};
      */
     var executePluginList = function (action, entity, plugins) {
         if (plugins.length == 0) {
-            log.warn('No plugins defined for ' + action);
+            //log.warn('No plugins defined for ' + action);
             return;
         }
 

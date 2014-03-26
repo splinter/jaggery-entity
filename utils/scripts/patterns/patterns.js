@@ -62,7 +62,7 @@ var patterns = {};
 
             //Check if there is a plugin
             if (!currentPlugin) {
-                log.warn('No plugin found at index: ' + index);
+                //log.warn('No plugin found at index: ' + index);
                 return;
             }
 
