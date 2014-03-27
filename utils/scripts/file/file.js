@@ -34,7 +34,6 @@ var file = {};
         var baseNameComponents = baseFileName.split('.');
         //Get all of the components except the last one
        	baseNameComponents.splice(baseNameComponents.length - 1, 1);
-       	
         return baseNameComponents.join('.');
     };
     /**
