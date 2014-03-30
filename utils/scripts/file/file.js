@@ -1,6 +1,25 @@
 var file = {};
 (function() {
     var log = new Log('utils-file');
+    var CONTENT_MAP={
+        'js':'application/javascript',
+        'css':'text/css',
+        'csv':'text/csv',
+        'html':'text/html',
+        'json':'application/json',
+        'png':'image/png',
+        'jpeg':'image/jpeg',
+        'gif':'image/gif',
+        'svg':'image/svg+xml',
+        'ttf':'application/x-font-ttf',
+        'eot':'application/vnd.ms-fontobject',
+        'woff':'application/font-woff',
+        'otf':'application/x-font-otf',
+        'zip':'application/zip',
+        'xml':'text/xml',
+        'xhtml':'application/xhtml+xml',
+        'pdf':'application/pdf'
+    };
     /**
      * The function  checks whether a directory contains a particular file
      * @param dir   The directory in which the file must be checked
@@ -17,11 +36,25 @@ var file = {};
         return null;
     };
     /**
-     * The function returns the file extension of the file
+     * The function returns the file extension of a filename
      * @param file
      * @return: The extension of the file
      */
-    file.getExtension = function(file) {};
+    file.getExtension = function(file) {
+        var baseFileName = file.getName();
+        //Break up the name by .
+        var baseNameComponents = baseFileName.split('.');  
+        var extension=baseNameComponents[baseNameComponents.length-1];
+        return extension;
+    };
+    /**
+     * The function obtains the MIME type based on the extension
+     * @param  The extension
+     * @return The mime type
+     */
+    file.getMimeType=function(extension){
+        return CONTENT_MAP[extension];
+    };
     /**
      * The function returns the name of the file without the file extension
      * @param file A file object
