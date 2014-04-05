@@ -1,24 +1,24 @@
 var file = {};
 (function() {
     var log = new Log('utils-file');
-    var CONTENT_MAP={
-        'js':'application/javascript',
-        'css':'text/css',
-        'csv':'text/csv',
-        'html':'text/html',
-        'json':'application/json',
-        'png':'image/png',
-        'jpeg':'image/jpeg',
-        'gif':'image/gif',
-        'svg':'image/svg+xml',
-        'ttf':'application/x-font-ttf',
-        'eot':'application/vnd.ms-fontobject',
-        'woff':'application/font-woff',
-        'otf':'application/x-font-otf',
-        'zip':'application/zip',
-        'xml':'text/xml',
-        'xhtml':'application/xhtml+xml',
-        'pdf':'application/pdf'
+    var CONTENT_MAP = {
+        'js': 'application/javascript',
+        'css': 'text/css',
+        'csv': 'text/csv',
+        'html': 'text/html',
+        'json': 'application/json',
+        'png': 'image/png',
+        'jpeg': 'image/jpeg',
+        'gif': 'image/gif',
+        'svg': 'image/svg+xml',
+        'ttf': 'application/x-font-ttf',
+        'eot': 'application/vnd.ms-fontobject',
+        'woff': 'application/font-woff',
+        'otf': 'application/x-font-otf',
+        'zip': 'application/zip',
+        'xml': 'text/xml',
+        'xhtml': 'application/xhtml+xml',
+        'pdf': 'application/pdf'
     };
     /**
      * The function  checks whether a directory contains a particular file
@@ -43,8 +43,8 @@ var file = {};
     file.getExtension = function(file) {
         var baseFileName = file.getName();
         //Break up the name by .
-        var baseNameComponents = baseFileName.split('.');  
-        var extension=baseNameComponents[baseNameComponents.length-1];
+        var baseNameComponents = baseFileName.split('.');
+        var extension = baseNameComponents[baseNameComponents.length - 1];
         return extension;
     };
     /**
@@ -52,7 +52,7 @@ var file = {};
      * @param  The extension
      * @return The mime type
      */
-    file.getMimeType=function(extension){
+    file.getMimeType = function(extension) {
         return CONTENT_MAP[extension];
     };
     /**
@@ -66,7 +66,7 @@ var file = {};
         //Break up the name by .
         var baseNameComponents = baseFileName.split('.');
         //Get all of the components except the last one
-       	baseNameComponents.splice(baseNameComponents.length - 1, 1);
+        baseNameComponents.splice(baseNameComponents.length - 1, 1);
         return baseNameComponents.join('.');
     };
     /**
@@ -113,6 +113,23 @@ var file = {};
             }
         }
         return filesInDir;
+    };
+    /**
+     * The function returns a list of all file names in a directory
+     * @param  dir The directory to be inspected
+     * @return {An array containing the name of all files in a directory
+     */
+    file.getAllFileNames = function(dir) {
+        var files = dir.listFiles();
+        var list = [];
+        var fileName;
+        for (var index in files) {
+            if (files[index].isDirectory()) {
+                fileName=this.getFileName(files[index].getName());
+                list.push(fileName);
+            }
+        }
+        return list;
     };
     /**
      * The function returns a list of all sub directories in a given directory
