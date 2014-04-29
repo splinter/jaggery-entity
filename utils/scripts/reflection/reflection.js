@@ -165,5 +165,29 @@ var reflection = {};
 
     };
 
+    /**
+     * The function merges the two provided objects to create a new
+     * object.In the case where b has the same property as a; the property of b
+     * will have precedence
+     * @param  {[type]} a [description]
+     * @param  {[type]} b [description]
+     * @return A new object having the properties of both object a and b
+     */
+    reflection.merge=function(a,b){
+        var newObj={};
+
+        //Copy the properties of a first
+        for(var key in a){
+            newObj[key]=b[key];
+        }
+
+        //Override with the properties of b
+        for(var key in b){
+            newObj[key]=b[key];
+        }
+
+        return newObj;
+    };
+
 }());
 
